@@ -1,5 +1,5 @@
-const CACHE_NAME = 'mes-projets-v1'
-const STATIC = ['/', '/dashboard', '/projects', '/lieux', '/offline.html']
+const CACHE_NAME = 'mes-projets-v2'
+const STATIC = ['/offline.html']
 
 self.addEventListener('install', event => {
   event.waitUntil(
@@ -17,7 +17,12 @@ self.addEventListener('activate', event => {
   self.clients.claim()
 })
 
+// Network-first: toujours essayer la version la plus récente en premier.
+// Le cache ne sert qu'en secours si l'appareil est hors-ligne — sinon une
+// ancienne version de l'appli reste coincée en mémoire après chaque mise à jour.
 self.addEventListener('fetch', event => {
+  if (event.request.method !== 'GET') return
+
   if (event.request.url.includes('/api/')) {
     event.respondWith(
       fetch(event.request).catch(() =>
@@ -28,8 +33,21 @@ self.addEventListener('fetch', event => {
     )
     return
   }
+
   event.respondWith(
-    caches.match(event.request).then(cached => cached || fetch(event.request))
+    fetch(event.request)
+      .then(response => {
+        const copy = response.clone()
+        caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy))
+        return response
+      })
+      .catch(() =>
+        caches.match(event.request).then(cached => {
+          if (cached) return cached
+          if (event.request.mode === 'navigate') return caches.match('/offline.html')
+          return Response.error()
+        })
+      )
   )
 })
 

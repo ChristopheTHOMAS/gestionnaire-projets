@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { Project, Step, computeProgress, deadlineUrgency } from '@/types'
+import { Project, Step, deadlineUrgency } from '@/types'
 import ProjectCard from '@/components/projects/ProjectCard'
 import GeoAlert from '@/components/geo/GeoAlert'
 import Link from 'next/link'

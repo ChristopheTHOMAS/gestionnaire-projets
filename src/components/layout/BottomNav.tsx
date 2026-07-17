@@ -7,6 +7,7 @@ const links = [
   { href: '/dashboard', label: 'Dashboard', icon: '🏠' },
   { href: '/projects', label: 'Projets', icon: '📋' },
   { href: '/lieux', label: 'Lieux', icon: '📍' },
+  { href: '/guide', label: 'Guide', icon: '📖' },
 ]
 
 export default function BottomNav() {
